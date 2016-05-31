@@ -26,14 +26,6 @@ module.exports = function(){
     // "extraction"        : []
   };
 
-  var ChartNameMap = {
-    "radar": "Radar",
-    "polar-area": "PolarArea",
-    "pie": "Pie",
-    "doughnut": "Doughnut",
-    "line": "Line",
-    "bar": "Bar"
-  };
   var dataTransformers = {
     'doughnut': getCategoricalData,
     'pie': getCategoricalData,
@@ -81,12 +73,12 @@ module.exports = function(){
       };
       result.datasets.push({
         label: label,
-        fillColor    : "rgba(" + hex.r + "," + hex.g + "," + hex.b + ",0.2)",
-        strokeColor  : "rgba(" + hex.r + "," + hex.g + "," + hex.b + ",1)",
-        pointColor   : "rgba(" + hex.r + "," + hex.g + "," + hex.b + ",1)",
-        pointStrokeColor: "#fff",
-        pointHighlightFill: "#fff",
-        pointHighlightStroke: "rgba(" + hex.r + "," + hex.g + "," + hex.b + ",1)",
+        backgroundColor: "rgba(" + hex.r + "," + hex.g + "," + hex.b + ",0.5)",
+        borderColor: "rgba(" + hex.r + "," + hex.g + "," + hex.b + ",1)",
+        pointBackgroundColor: "rgba(" + hex.r + "," + hex.g + "," + hex.b + ",1)",
+        pointBorderColor: "#fff",
+        pointBackgroundColor: "#fff",
+        pointBorderColor: "rgba(" + hex.r + "," + hex.g + "," + hex.b + ",1)",
         data: self.dataset.selectColumn(+i+1).slice(1)
       });
     });
@@ -129,14 +121,16 @@ module.exports = function(){
           this.error("No data to display");
           return;
         }
-        var method = ChartNameMap[type],
-            opts = extend({}, this.chartOptions()),
-            data = dataTransformers[type].call(this);
+        var opts = {
+          type: type,
+          data: dataTransformers[type].call(this),
+          options: this.chartOptions(),
+        };
 
         if (this.view._artifacts["chartjs"]) {
           this.view._artifacts["chartjs"].destroy();
         }
-        this.view._artifacts["chartjs"] = new Chart(this.view._artifacts["ctx"])[method](data, opts);
+        this.view._artifacts["chartjs"] = new Chart(this.view._artifacts["ctx"], opts);
         return this;
       },
       destroy: function(){
